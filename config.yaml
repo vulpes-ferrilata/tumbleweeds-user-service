@@ -1,0 +1,7 @@
+server:
+  address: 127.0.0.1:7000
+database:
+  address: 127.0.0.1:27017
+  name: user
+  username: user
+  password: 123456

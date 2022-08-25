@@ -1,10 +1,10 @@
 dns := mysql://user:123456@tcp(localhost:3306)/user?charset=utf8mb4
 path := ./migration
 
-migrate-up:
+migrate:
 	migrate -database ${dns} -path ${path} up
 
-migrate-down:
-	migrate -database ${dns} -path ${path} down
+generate-swag:
+	swag init --pd -d cmd/http
 
-.PHONY: migrate-up migrate-down
+.PHONY: migrate generate-swag

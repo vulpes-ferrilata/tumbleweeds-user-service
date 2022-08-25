@@ -3,40 +3,36 @@ package handlers
 import (
 	"context"
 
-	"github.com/VulpesFerrilata/user-service/application/queries"
-	"github.com/VulpesFerrilata/user-service/infrastructure/dig/results"
-	"github.com/VulpesFerrilata/user-service/view/projectors"
-	"github.com/google/uuid"
+	"github.com/go-playground/validator/v10"
 	"github.com/pkg/errors"
+	"github.com/vulpes-ferrilata/user-service/application/queries"
+	"github.com/vulpes-ferrilata/user-service/infrastructure/cqrs/query"
+	"github.com/vulpes-ferrilata/user-service/infrastructure/cqrs/query/wrappers"
+	"github.com/vulpes-ferrilata/user-service/view/models"
+	"github.com/vulpes-ferrilata/user-service/view/projectors"
+	"go.mongodb.org/mongo-driver/bson/primitive"
 )
 
-func NewGetUserQueryHandler(userProjector projectors.UserProjector) results.QueryHandlerResult {
-	queryHandler := &getUserByIDQueryHandler{
+func NewGetUserByIDQueryHandler(validate *validator.Validate, userProjector projectors.UserProjector) query.QueryHandler[*queries.GetUserByIDQuery, *models.User] {
+	handler := &getUserByIDQueryHandler{
 		userProjector: userProjector,
 	}
+	validationWrapper := wrappers.NewValidationWrapper[*queries.GetUserByIDQuery, *models.User](validate, handler)
 
-	return results.QueryHandlerResult{
-		QueryHandler: queryHandler,
-	}
+	return validationWrapper
 }
 
 type getUserByIDQueryHandler struct {
 	userProjector projectors.UserProjector
 }
 
-func (g getUserByIDQueryHandler) GetQuery() interface{} {
-	return &queries.GetUserByIDQuery{}
-}
-
-func (g getUserByIDQueryHandler) Handle(ctx context.Context, query interface{}) (interface{}, error) {
-	getUserByIDQuery := query.(queries.GetUserByIDQuery)
-
-	userID, err := uuid.Parse(getUserByIDQuery.ID)
+func (g getUserByIDQueryHandler) Handle(ctx context.Context, getUserByIDQuery *queries.GetUserByIDQuery) (*models.User, error) {
+	id, err := primitive.ObjectIDFromHex(getUserByIDQuery.ID)
 	if err != nil {
 		return nil, errors.WithStack(err)
 	}
 
-	user, err := g.userProjector.GetByID(ctx, userID)
+	user, err := g.userProjector.GetByID(ctx, id)
 	if err != nil {
 		return nil, errors.WithStack(err)
 	}

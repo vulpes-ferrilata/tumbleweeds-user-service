@@ -3,49 +3,47 @@ package handlers
 import (
 	"context"
 
-	"github.com/VulpesFerrilata/user-service/application/commands"
-	"github.com/VulpesFerrilata/user-service/domain/aggregators"
-	domain_services "github.com/VulpesFerrilata/user-service/domain/services"
-	"github.com/VulpesFerrilata/user-service/infrastructure/dig/results"
-	"github.com/google/uuid"
+	"github.com/go-playground/validator/v10"
 	"github.com/pkg/errors"
+	"github.com/vulpes-ferrilata/user-service/application/commands"
+	"github.com/vulpes-ferrilata/user-service/domain/models"
+	"github.com/vulpes-ferrilata/user-service/domain/repositories"
+	"github.com/vulpes-ferrilata/user-service/infrastructure/cqrs/command"
+	"github.com/vulpes-ferrilata/user-service/infrastructure/cqrs/command/wrappers"
+	"go.mongodb.org/mongo-driver/bson/primitive"
+	"go.mongodb.org/mongo-driver/mongo"
 )
 
-func NewCreateUserCommandHandler(userAggregator aggregators.UserAggregator,
-	userService domain_services.UserService) results.CommandHandlerResult {
-	commandHandler := &createUserCommandHandler{
-		userAggregator: userAggregator,
-		userService:    userService,
+func NewCreateUserCommandHandler(validate *validator.Validate, db *mongo.Database, userRepository repositories.UserRepository) command.CommandHandler[*commands.CreateUserCommand] {
+	handler := &createUserCommandHandler{
+		userRepository: userRepository,
 	}
+	transactionWrapper := wrappers.NewTransactionWrapper[*commands.CreateUserCommand](db, handler)
+	validationWrapper := wrappers.NewValidationWrapper[*commands.CreateUserCommand](validate, transactionWrapper)
 
-	return results.CommandHandlerResult{
-		CommandHandler: commandHandler,
-	}
+	return validationWrapper
 }
 
 type createUserCommandHandler struct {
-	userAggregator aggregators.UserAggregator
-	userService    domain_services.UserService
+	userRepository repositories.UserRepository
 }
 
 func (c createUserCommandHandler) GetCommand() interface{} {
 	return &commands.CreateUserCommand{}
 }
 
-func (c createUserCommandHandler) Handle(ctx context.Context, command interface{}) error {
-	createUserCommand := command.(*commands.CreateUserCommand)
-
-	userID, err := uuid.Parse(createUserCommand.ID)
+func (c createUserCommandHandler) Handle(ctx context.Context, createUserCommand *commands.CreateUserCommand) error {
+	id, err := primitive.ObjectIDFromHex(createUserCommand.ID)
 	if err != nil {
 		return errors.WithStack(err)
 	}
 
-	user, err := c.userService.NewUser(ctx, userID, createUserCommand.DisplayName)
-	if err != nil {
-		return errors.WithStack(err)
-	}
+	user := models.NewUserBuilder().
+		SetID(id).
+		SetDisplayName(createUserCommand.DisplayName).
+		Create()
 
-	if err := c.userAggregator.Save(ctx, user); err != nil {
+	if err := c.userRepository.Insert(ctx, user); err != nil {
 		return errors.WithStack(err)
 	}
 
