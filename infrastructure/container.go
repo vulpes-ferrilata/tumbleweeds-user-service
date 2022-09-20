@@ -21,6 +21,7 @@ func NewContainer() *dig.Container {
 	container.Provide(NewLogrus)
 	container.Provide(NewUniversalTranslator)
 	//--Grpc interceptors
+	container.Provide(interceptors.NewRecoverInterceptor)
 	container.Provide(interceptors.NewErrorHandlerInterceptor)
 	container.Provide(interceptors.NewLocaleInterceptor)
 

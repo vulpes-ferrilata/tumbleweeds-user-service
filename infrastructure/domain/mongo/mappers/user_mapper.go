@@ -26,7 +26,7 @@ func ToUserDomain(userDocument *documents.User) *models.User {
 		return nil
 	}
 
-	return models.NewUserBuilder().
+	return models.UserBuilder{}.
 		SetID(userDocument.ID).
 		SetDisplayName(userDocument.DisplayName).
 		SetVersion(userDocument.Version).

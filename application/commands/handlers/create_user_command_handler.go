@@ -19,7 +19,7 @@ func NewCreateUserCommandHandler(validate *validator.Validate, db *mongo.Databas
 		userRepository: userRepository,
 	}
 	transactionWrapper := wrappers.NewTransactionWrapper[*commands.CreateUserCommand](db, handler)
-	validationWrapper := wrappers.NewValidationWrapper[*commands.CreateUserCommand](validate, transactionWrapper)
+	validationWrapper := wrappers.NewValidationWrapper(validate, transactionWrapper)
 
 	return validationWrapper
 }
@@ -38,7 +38,7 @@ func (c createUserCommandHandler) Handle(ctx context.Context, createUserCommand 
 		return errors.WithStack(err)
 	}
 
-	user := models.NewUserBuilder().
+	user := models.UserBuilder{}.
 		SetID(id).
 		SetDisplayName(createUserCommand.DisplayName).
 		Create()

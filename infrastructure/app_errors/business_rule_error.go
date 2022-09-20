@@ -30,7 +30,7 @@ func (b bussinessRuleError) Status(translator ut.Translator) *status.Status {
 		detail = b.message
 	}
 
-	stt := status.New(codes.Aborted, detail)
+	stt := status.New(codes.FailedPrecondition, detail)
 
 	return stt
 }
