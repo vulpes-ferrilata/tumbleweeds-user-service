@@ -19,7 +19,7 @@ type staleObjectError struct {
 }
 
 func (s staleObjectError) Error() string {
-	return fmt.Sprintf("attempted to update stale %s", s.object)
+	return fmt.Sprintf("attempted to update or delete stale %s", s.object)
 }
 
 func (s staleObjectError) Status(translator ut.Translator) *status.Status {
@@ -30,7 +30,7 @@ func (s staleObjectError) Status(translator ut.Translator) *status.Status {
 
 	detail, err := translator.T("stale-object-error", object)
 	if err != nil {
-		detail = s.Error()
+		detail = fmt.Sprintf("%s: %s", "stale-object-error", object)
 	}
 
 	stt := status.New(codes.Aborted, detail)
