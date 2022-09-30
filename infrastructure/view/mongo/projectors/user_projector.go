@@ -15,7 +15,7 @@ import (
 
 func NewUserProjector(db *mongo.Database) projectors.UserProjector {
 	return &userProjector{
-		userCollection: db.Collection("users"),
+		userCollection: db.Collection("user"),
 	}
 }
 

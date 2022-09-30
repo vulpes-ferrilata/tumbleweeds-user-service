@@ -4,7 +4,9 @@ import (
 	"context"
 
 	"github.com/pkg/errors"
-	"github.com/vulpes-ferrilata/shared/proto/v1/user"
+	"github.com/vulpes-ferrilata/user-service-proto/pb"
+	"github.com/vulpes-ferrilata/user-service-proto/pb/requests"
+	"github.com/vulpes-ferrilata/user-service-proto/pb/responses"
 	"github.com/vulpes-ferrilata/user-service/application/commands"
 	"github.com/vulpes-ferrilata/user-service/application/queries"
 	"github.com/vulpes-ferrilata/user-service/infrastructure/cqrs/command"
@@ -14,8 +16,8 @@ import (
 	"google.golang.org/protobuf/types/known/emptypb"
 )
 
-func NewUserServer(getUserByIDQueryHandler query.QueryHandler[*queries.GetUserByIDQuery, *models.User],
-	createUserCommandHandler command.CommandHandler[*commands.CreateUserCommand]) user.UserServer {
+func NewUserServer(getUserByIDQueryHandler query.QueryHandler[*queries.GetUserByID, *models.User],
+	createUserCommandHandler command.CommandHandler[*commands.CreateUser]) pb.UserServer {
 	return &userServer{
 		getUserByIDQueryHandler:  getUserByIDQueryHandler,
 		createUserCommandHandler: createUserCommandHandler,
@@ -23,14 +25,14 @@ func NewUserServer(getUserByIDQueryHandler query.QueryHandler[*queries.GetUserBy
 }
 
 type userServer struct {
-	user.UnimplementedUserServer
-	getUserByIDQueryHandler  query.QueryHandler[*queries.GetUserByIDQuery, *models.User]
-	createUserCommandHandler command.CommandHandler[*commands.CreateUserCommand]
+	pb.UnimplementedUserServer
+	getUserByIDQueryHandler  query.QueryHandler[*queries.GetUserByID, *models.User]
+	createUserCommandHandler command.CommandHandler[*commands.CreateUser]
 }
 
-func (u userServer) GetUserByID(ctx context.Context, getUserByUserIDRequest *user.GetUserByIDRequest) (*user.UserResponse, error) {
-	getUserByIDQuery := &queries.GetUserByIDQuery{
-		ID: getUserByUserIDRequest.GetID(),
+func (u userServer) GetUserByID(ctx context.Context, getUserByUserIDRequest *requests.GetUserByID) (*responses.User, error) {
+	getUserByIDQuery := &queries.GetUserByID{
+		UserID: getUserByUserIDRequest.GetUserID(),
 	}
 
 	user, err := u.getUserByIDQueryHandler.Handle(ctx, getUserByIDQuery)
@@ -43,9 +45,9 @@ func (u userServer) GetUserByID(ctx context.Context, getUserByUserIDRequest *use
 	return userResponse, nil
 }
 
-func (u userServer) CreateUser(ctx context.Context, createUserRequest *user.CreateUserRequest) (*emptypb.Empty, error) {
-	createUserCommand := &commands.CreateUserCommand{
-		ID:          createUserRequest.GetID(),
+func (u userServer) CreateUser(ctx context.Context, createUserRequest *requests.CreateUser) (*emptypb.Empty, error) {
+	createUserCommand := &commands.CreateUser{
+		UserID:      createUserRequest.GetUserID(),
 		DisplayName: createUserRequest.GetDisplayName(),
 	}
 

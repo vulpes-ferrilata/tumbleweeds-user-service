@@ -1,7 +1,7 @@
 server:
   address: 0.0.0.0:8080
-database:
+mongo:
   address: 127.0.0.1:27017
-  name: user
-  username: user
+  database_name: user
+  username: app_user
   password: 123456

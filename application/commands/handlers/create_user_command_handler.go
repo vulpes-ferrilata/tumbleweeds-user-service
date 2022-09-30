@@ -14,11 +14,11 @@ import (
 	"go.mongodb.org/mongo-driver/mongo"
 )
 
-func NewCreateUserCommandHandler(validate *validator.Validate, db *mongo.Database, userRepository repositories.UserRepository) command.CommandHandler[*commands.CreateUserCommand] {
+func NewCreateUserCommandHandler(validate *validator.Validate, db *mongo.Database, userRepository repositories.UserRepository) command.CommandHandler[*commands.CreateUser] {
 	handler := &createUserCommandHandler{
 		userRepository: userRepository,
 	}
-	transactionWrapper := wrappers.NewTransactionWrapper[*commands.CreateUserCommand](db, handler)
+	transactionWrapper := wrappers.NewTransactionWrapper[*commands.CreateUser](db, handler)
 	validationWrapper := wrappers.NewValidationWrapper(validate, transactionWrapper)
 
 	return validationWrapper
@@ -28,18 +28,14 @@ type createUserCommandHandler struct {
 	userRepository repositories.UserRepository
 }
 
-func (c createUserCommandHandler) GetCommand() interface{} {
-	return &commands.CreateUserCommand{}
-}
-
-func (c createUserCommandHandler) Handle(ctx context.Context, createUserCommand *commands.CreateUserCommand) error {
-	id, err := primitive.ObjectIDFromHex(createUserCommand.ID)
+func (c createUserCommandHandler) Handle(ctx context.Context, createUserCommand *commands.CreateUser) error {
+	userID, err := primitive.ObjectIDFromHex(createUserCommand.UserID)
 	if err != nil {
 		return errors.WithStack(err)
 	}
 
 	user := models.UserBuilder{}.
-		SetID(id).
+		SetID(userID).
 		SetDisplayName(createUserCommand.DisplayName).
 		Create()
 

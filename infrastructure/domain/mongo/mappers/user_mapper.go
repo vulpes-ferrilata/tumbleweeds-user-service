@@ -20,15 +20,3 @@ func ToUserDocument(user *models.User) *documents.User {
 		DisplayName: user.GetDisplayName(),
 	}
 }
-
-func ToUserDomain(userDocument *documents.User) *models.User {
-	if userDocument == nil {
-		return nil
-	}
-
-	return models.UserBuilder{}.
-		SetID(userDocument.ID).
-		SetDisplayName(userDocument.DisplayName).
-		SetVersion(userDocument.Version).
-		Create()
-}

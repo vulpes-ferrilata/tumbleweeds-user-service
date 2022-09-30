@@ -13,7 +13,7 @@ import (
 
 func NewUserRepository(db *mongo.Database) repositories.UserRepository {
 	return &userRepository{
-		userCollection: db.Collection("users"),
+		userCollection: db.Collection("user"),
 	}
 }
 
