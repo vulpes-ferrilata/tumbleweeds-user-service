@@ -4,9 +4,9 @@ import (
 	command_handlers "github.com/vulpes-ferrilata/user-service/application/commands/handlers"
 	query_handlers "github.com/vulpes-ferrilata/user-service/application/queries/handlers"
 	"github.com/vulpes-ferrilata/user-service/infrastructure/domain/mongo/repositories"
+	"github.com/vulpes-ferrilata/user-service/infrastructure/grpc"
 	"github.com/vulpes-ferrilata/user-service/infrastructure/grpc/interceptors"
 	"github.com/vulpes-ferrilata/user-service/infrastructure/view/mongo/projectors"
-	"github.com/vulpes-ferrilata/user-service/presentation"
 	"github.com/vulpes-ferrilata/user-service/presentation/v1/servers"
 	"go.uber.org/dig"
 )
@@ -20,6 +20,7 @@ func NewContainer() *dig.Container {
 	container.Provide(NewValidator)
 	container.Provide(NewLogrus)
 	container.Provide(NewUniversalTranslator)
+	container.Provide(grpc.NewServer)
 	//--Grpc interceptors
 	container.Provide(interceptors.NewRecoverInterceptor)
 	container.Provide(interceptors.NewErrorHandlerInterceptor)
@@ -40,9 +41,6 @@ func NewContainer() *dig.Container {
 	container.Provide(command_handlers.NewCreateUserCommandHandler)
 
 	//Presentation layer
-	//--Server
-	container.Provide(presentation.NewServer)
-	//--Controllers
 	container.Provide(servers.NewUserServer)
 
 	return container
