@@ -40,7 +40,10 @@ func (u userServer) GetUserByID(ctx context.Context, getUserByUserIDRequest *req
 		return nil, errors.WithStack(err)
 	}
 
-	userResponse := mappers.ToUserResponse(user)
+	userResponse, err := mappers.UserMapper{}.ToResponse(user)
+	if err != nil {
+		return nil, errors.WithStack(err)
+	}
 
 	return userResponse, nil
 }

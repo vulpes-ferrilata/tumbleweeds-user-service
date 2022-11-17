@@ -5,9 +5,11 @@ import (
 	"github.com/vulpes-ferrilata/user-service/infrastructure/domain/mongo/documents"
 )
 
-func ToUserDocument(user *models.User) *documents.User {
+type UserMapper struct{}
+
+func (u UserMapper) ToDocument(user *models.User) (*documents.User, error) {
 	if user == nil {
-		return nil
+		return nil, nil
 	}
 
 	return &documents.User{
@@ -18,5 +20,5 @@ func ToUserDocument(user *models.User) *documents.User {
 			Version: user.GetVersion(),
 		},
 		DisplayName: user.GetDisplayName(),
-	}
+	}, nil
 }

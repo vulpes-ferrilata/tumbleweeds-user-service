@@ -13,7 +13,7 @@ import (
 
 func NewUserRepository(db *mongo.Database) repositories.UserRepository {
 	return &userRepository{
-		userCollection: db.Collection("user"),
+		userCollection: db.Collection("users"),
 	}
 }
 
@@ -22,7 +22,10 @@ type userRepository struct {
 }
 
 func (u userRepository) Insert(ctx context.Context, user *models.User) error {
-	userDocument := mappers.ToUserDocument(user)
+	userDocument, err := mappers.UserMapper{}.ToDocument(user)
+	if err != nil {
+		return errors.WithStack(err)
+	}
 
 	userDocument.Version = 1
 

@@ -5,13 +5,15 @@ import (
 	"github.com/vulpes-ferrilata/user-service/view/models"
 )
 
-func ToUserResponse(userView *models.User) *responses.User {
+type UserMapper struct{}
+
+func (u UserMapper) ToResponse(userView *models.User) (*responses.User, error) {
 	if userView == nil {
-		return nil
+		return nil, nil
 	}
 
 	return &responses.User{
 		ID:          userView.ID.Hex(),
 		DisplayName: userView.DisplayName,
-	}
+	}, nil
 }

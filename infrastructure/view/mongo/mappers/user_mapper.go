@@ -5,15 +5,15 @@ import (
 	"github.com/vulpes-ferrilata/user-service/view/models"
 )
 
-func ToUserView(userDocument *documents.User) *models.User {
+type UserMapper struct{}
+
+func (u UserMapper) ToView(userDocument *documents.User) (*models.User, error) {
 	if userDocument == nil {
-		return nil
+		return nil, nil
 	}
 
-	user := &models.User{
+	return &models.User{
 		ID:          userDocument.ID,
 		DisplayName: userDocument.DisplayName,
-	}
-
-	return user
+	}, nil
 }

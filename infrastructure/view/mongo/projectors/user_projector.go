@@ -15,7 +15,7 @@ import (
 
 func NewUserProjector(db *mongo.Database) projectors.UserProjector {
 	return &userProjector{
-		userCollection: db.Collection("user"),
+		userCollection: db.Collection("users"),
 	}
 }
 
@@ -32,7 +32,10 @@ func (u userProjector) GetByID(ctx context.Context, id primitive.ObjectID) (*mod
 		return nil, errors.WithStack(err)
 	}
 
-	user := mappers.ToUserView(userDocument)
+	user, err := mappers.UserMapper{}.ToView(userDocument)
+	if err != nil {
+		return nil, errors.WithStack(err)
+	}
 
 	return user, nil
 }
