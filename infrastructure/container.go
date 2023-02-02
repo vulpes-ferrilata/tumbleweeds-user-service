@@ -1,13 +1,14 @@
 package infrastructure
 
 import (
-	command_handlers "github.com/vulpes-ferrilata/user-service/application/commands/handlers"
-	query_handlers "github.com/vulpes-ferrilata/user-service/application/queries/handlers"
+	"github.com/vulpes-ferrilata/user-service/application/commands"
+	"github.com/vulpes-ferrilata/user-service/application/queries"
+	"github.com/vulpes-ferrilata/user-service/infrastructure/cqrs/middlewares"
 	"github.com/vulpes-ferrilata/user-service/infrastructure/domain/mongo/repositories"
-	"github.com/vulpes-ferrilata/user-service/infrastructure/grpc"
 	"github.com/vulpes-ferrilata/user-service/infrastructure/grpc/interceptors"
 	"github.com/vulpes-ferrilata/user-service/infrastructure/view/mongo/projectors"
-	"github.com/vulpes-ferrilata/user-service/presentation/v1/servers"
+	"github.com/vulpes-ferrilata/user-service/presentation"
+	v1 "github.com/vulpes-ferrilata/user-service/presentation/v1"
 	"go.uber.org/dig"
 )
 
@@ -20,11 +21,15 @@ func NewContainer() *dig.Container {
 	container.Provide(NewValidator)
 	container.Provide(NewLogrus)
 	container.Provide(NewUniversalTranslator)
-	container.Provide(grpc.NewServer)
+	container.Provide(NewCommandBus)
+	container.Provide(NewQueryBus)
 	//--Grpc interceptors
 	container.Provide(interceptors.NewRecoverInterceptor)
 	container.Provide(interceptors.NewErrorHandlerInterceptor)
 	container.Provide(interceptors.NewLocaleInterceptor)
+	//--Cqrs middlewares
+	container.Provide(middlewares.NewValidationMiddleware)
+	container.Provide(middlewares.NewTransactionMiddleware)
 
 	//Domain layer
 	//--Repositories
@@ -36,12 +41,13 @@ func NewContainer() *dig.Container {
 
 	//Application layer
 	//--Queries
-	container.Provide(query_handlers.NewGetUserByIDQueryHandler)
+	container.Provide(queries.NewGetUserByIDQueryHandler)
 	//--Commands
-	container.Provide(command_handlers.NewCreateUserCommandHandler)
+	container.Provide(commands.NewCreateUserCommandHandler)
 
 	//Presentation layer
-	container.Provide(servers.NewUserServer)
+	container.Provide(presentation.NewServer)
+	container.Provide(v1.NewUserServer)
 
 	return container
 }
