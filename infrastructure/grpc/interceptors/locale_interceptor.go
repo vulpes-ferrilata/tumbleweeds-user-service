@@ -17,7 +17,7 @@ func NewLocaleInterceptor() *LocaleInterceptor {
 type LocaleInterceptor struct{}
 
 func (l LocaleInterceptor) ServerUnaryInterceptor() grpc.UnaryServerInterceptor {
-	return func(ctx context.Context, req interface{}, info *grpc.UnaryServerInfo, handler grpc.UnaryHandler) (_ interface{}, err error) {
+	return func(ctx context.Context, req interface{}, info *grpc.UnaryServerInfo, handler grpc.UnaryHandler) (interface{}, error) {
 		md, _ := metadata.FromIncomingContext(ctx)
 		locales := md[strings.ToLower(httpext.AcceptedLanguage)]
 		ctx = context_values.WithLocales(ctx, locales)

@@ -19,7 +19,7 @@ func NewRecoverInterceptor() *RecoverInterceptor {
 type RecoverInterceptor struct{}
 
 func (r RecoverInterceptor) ServerUnaryInterceptor() grpc.UnaryServerInterceptor {
-	return func(ctx context.Context, req interface{}, info *grpc.UnaryServerInfo, handler grpc.UnaryHandler) (_ interface{}, err error) {
+	return func(ctx context.Context, req interface{}, info *grpc.UnaryServerInfo, handler grpc.UnaryHandler) (resp interface{}, err error) {
 		defer func() {
 			if r := recover(); r != nil {
 				detail := fmt.Sprintf("%v", r)
@@ -37,7 +37,7 @@ func (r RecoverInterceptor) ServerUnaryInterceptor() grpc.UnaryServerInterceptor
 			}
 		}()
 
-		resp, err := handler(ctx, req)
+		resp, err = handler(ctx, req)
 
 		return resp, err
 	}

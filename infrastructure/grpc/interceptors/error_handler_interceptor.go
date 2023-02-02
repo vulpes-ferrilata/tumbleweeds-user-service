@@ -6,7 +6,7 @@ import (
 	ut "github.com/go-playground/universal-translator"
 	"github.com/go-playground/validator/v10"
 	"github.com/pkg/errors"
-	"github.com/vulpes-ferrilata/user-service/infrastructure/app_errors"
+	"github.com/vulpes-ferrilata/user-service/app_errors"
 	"github.com/vulpes-ferrilata/user-service/infrastructure/context_values"
 	"google.golang.org/grpc"
 	"google.golang.org/grpc/status"
@@ -23,11 +23,12 @@ type ErrorHandlerInterceptor struct {
 }
 
 func (e ErrorHandlerInterceptor) ServerUnaryInterceptor() grpc.UnaryServerInterceptor {
-	return func(ctx context.Context, req interface{}, info *grpc.UnaryServerInfo, handler grpc.UnaryHandler) (_ interface{}, err error) {
+	return func(ctx context.Context, req interface{}, info *grpc.UnaryServerInfo, handler grpc.UnaryHandler) (interface{}, error) {
 		result, err := handler(ctx, req)
 		if validationErrors, ok := errors.Cause(err).(validator.ValidationErrors); ok {
 			err = app_errors.NewCommandValidationError(validationErrors)
 		}
+
 		if grpcErr, ok := errors.Cause(err).(app_errors.GrpcError); ok {
 			locales := context_values.GetLocales(ctx)
 			translator, _ := e.universalTranslator.FindTranslator(locales...)
@@ -36,9 +37,11 @@ func (e ErrorHandlerInterceptor) ServerUnaryInterceptor() grpc.UnaryServerInterc
 
 			return result, stt.Err()
 		}
+
 		if status, ok := status.FromError(errors.Cause(err)); ok {
 			return result, status.Err()
 		}
+
 		if err != nil {
 			return result, errors.WithStack(err)
 		}
