@@ -13,7 +13,7 @@ require (
 	github.com/spf13/viper v1.12.0
 	github.com/vulpes-ferrilata/cqrs v1.0.0
 	github.com/vulpes-ferrilata/custom-validator v1.0.0
-	github.com/vulpes-ferrilata/user-service-proto v1.0.0
+	github.com/vulpes-ferrilata/user-service-proto v1.0.1
 	go.mongodb.org/mongo-driver v1.11.1
 	go.uber.org/dig v1.15.0
 	google.golang.org/genproto v0.0.0-20221118155620-16455021b5e6

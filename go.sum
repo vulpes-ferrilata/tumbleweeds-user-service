@@ -216,8 +216,8 @@ github.com/vulpes-ferrilata/cqrs v1.0.0 h1:PctUJNeGINMz/hQaZdwJ1Fx5tXhDV1GExbKOf
 github.com/vulpes-ferrilata/cqrs v1.0.0/go.mod h1:cjRMmJN53bZRKoiY5DoZfYxhUllP68ZXQEuksa5Pt6I=
 github.com/vulpes-ferrilata/custom-validator v1.0.0 h1:db0yfRl7hRj6fP5R6GdTFa5aS6OLtnr2VAMe8oLOBys=
 github.com/vulpes-ferrilata/custom-validator v1.0.0/go.mod h1:YOhjgMTxJmh+rt+Cty3DWxOLtPKYsy6iJneDtBEcyAU=
-github.com/vulpes-ferrilata/user-service-proto v1.0.0 h1:WZVdCUnKajd75O5+/b3j9cH+P/k2apIUVE/d/TAbsV8=
-github.com/vulpes-ferrilata/user-service-proto v1.0.0/go.mod h1:yoK8MMSbFcFEbxrnrNaixXg7P6wGhUqfLeEJqxSoCfM=
+github.com/vulpes-ferrilata/user-service-proto v1.0.1 h1:2l6Kp8Yv8MY824vN03VidyYhcoZl4b50RljvFAuiRfk=
+github.com/vulpes-ferrilata/user-service-proto v1.0.1/go.mod h1:yoK8MMSbFcFEbxrnrNaixXg7P6wGhUqfLeEJqxSoCfM=
 github.com/xdg-go/pbkdf2 v1.0.0 h1:Su7DPu48wXMwC3bs7MCNG+z4FhcyEuz5dlvchbq0B0c=
 github.com/xdg-go/pbkdf2 v1.0.0/go.mod h1:jrpuAogTd400dnrH08LKmI/xc1MbPOebTwRqcT5RDeI=
 github.com/xdg-go/scram v1.1.1 h1:VOMT+81stJgXW3CpHyqHN3AXDYIMsx56mEFrB37Mb/E=

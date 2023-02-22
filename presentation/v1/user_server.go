@@ -28,7 +28,7 @@ type userServer struct {
 	commandBus *cqrs.CommandBus
 }
 
-func (u userServer) GetUserByID(ctx context.Context, getUserByUserIDRequest *pb_models.GetUserByID) (*pb_models.User, error) {
+func (u userServer) GetUserByID(ctx context.Context, getUserByUserIDRequest *pb_models.GetUserByIDRequest) (*pb_models.User, error) {
 	getUserByIDQuery := &queries.GetUserByIDQuery{
 		UserID: getUserByUserIDRequest.GetUserID(),
 	}
@@ -46,7 +46,7 @@ func (u userServer) GetUserByID(ctx context.Context, getUserByUserIDRequest *pb_
 	return userResponse, nil
 }
 
-func (u userServer) CreateUser(ctx context.Context, createUserRequest *pb_models.CreateUser) (*emptypb.Empty, error) {
+func (u userServer) CreateUser(ctx context.Context, createUserRequest *pb_models.CreateUserRequest) (*emptypb.Empty, error) {
 	createUserCommand := &commands.CreateUserCommand{
 		UserID:      createUserRequest.GetUserID(),
 		DisplayName: createUserRequest.GetDisplayName(),
